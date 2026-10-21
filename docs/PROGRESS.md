@@ -19,6 +19,8 @@
 
 ## Verification status
 
+A fresh CI build is required after adding the one-shot killer snare block, trap triggering, and the trap registry test.
+
 A fresh clean build is required after adding killer snares and the trap registration/removal test.
 - [x] Latest clean CI build succeeded after match-end fixes.
 - [x] Automated JUnit tests passed, including match phases, generator threshold, survivor state transitions and killer win condition.
