@@ -11,6 +11,7 @@ import dev.projectentity.game.PlayerRole;
 import dev.projectentity.game.SurvivorCondition;
 import dev.projectentity.game.SurvivorState;
 import dev.projectentity.game.SurvivorBotAI;
+import dev.projectentity.game.KillerBotAI;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents;
@@ -27,6 +28,7 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.monster.Husk;
+import net.minecraft.world.phys.AABB;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.server.level.ServerPlayer;
@@ -49,6 +51,7 @@ public final class ProjectEntity implements ModInitializer {
         ServerLifecycleEvents.SERVER_STARTED.register(server -> MatchManager.reset());
         ServerLifecycleEvents.SERVER_STOPPED.register(server -> MatchManager.reset());
         SurvivorBotAI.register();
+        KillerBotAI.register();
 
         // A hit from the tagged demo killer becomes a server-owned two-hit condition
         // rather than normal Minecraft damage. Full downed/carry/rescue presentation
@@ -96,6 +99,39 @@ public final class ProjectEntity implements ModInitializer {
             var clicked = world.getBlockState(hit.getBlockPos());
             var role = MatchManager.role(player.getUUID());
             MatchState match = MatchManager.current();
+
+            if (clicked.is(ObjectiveBlocks.PALLET)) {
+                if (role != PlayerRole.SURVIVOR) {
+                    player.displayClientMessage(Component.literal("Only survivors can drop pallets."), true);
+                    return InteractionResult.SUCCESS;
+                }
+                if (match.phase() != MatchPhase.ACTIVE) {
+                    player.displayClientMessage(Component.literal("Pallets can only be used during an active match."), true);
+                    return InteractionResult.SUCCESS;
+                }
+                BlockPos palletPos = hit.getBlockPos();
+                world.setBlock(palletPos, ObjectiveBlocks.DROPPED_PALLET.defaultBlockState(), 3);
+                var nearbyKillers = ((ServerLevel) world).getEntitiesOfClass(
+                    Husk.class, new AABB(palletPos).inflate(3.5),
+                    killer -> killer.getTags().contains(KillerBotAI.KILLER_TAG));
+                if (!nearbyKillers.isEmpty()) {
+                    for (Husk killer : nearbyKillers) KillerBotAI.stun(killer, 60);
+                    player.displayClientMessage(Component.literal("PALLET STUN — the killer is stunned briefly!"), false);
+                } else {
+                    player.displayClientMessage(Component.literal("Pallet dropped. It now blocks the path."), false);
+                }
+                return InteractionResult.SUCCESS;
+            }
+
+            if (clicked.is(ObjectiveBlocks.DROPPED_PALLET)) {
+                if (role == PlayerRole.KILLER && match.phase() == MatchPhase.ACTIVE) {
+                    world.removeBlock(hit.getBlockPos(), false);
+                    player.displayClientMessage(Component.literal("Pallet broken."), false);
+                } else {
+                    player.displayClientMessage(Component.literal("The dropped pallet blocks this route."), true);
+                }
+                return InteractionResult.SUCCESS;
+            }
 
             if (clicked.is(ObjectiveBlocks.GENERATOR)) {
                 if (role != PlayerRole.SURVIVOR) {
@@ -205,11 +241,16 @@ public final class ProjectEntity implements ModInitializer {
                             new int[][]{{12, 0}, {8, 8}, {0, 12}, {-8, 8}, {-12, 0}, {-8, -8}, {0, -12}}, usedPositions);
                         int placedGates = placeObjectives(level, player.blockPosition(), ObjectiveBlocks.EXIT_GATE,
                             new int[][]{{18, 4}, {-18, -4}}, usedPositions);
+                        int placedPallets = placeObjectives(level, player.blockPosition(), ObjectiveBlocks.PALLET,
+                            new int[][]{{6, 4}, {4, -6}, {-6, -4}, {-4, 6}}, usedPositions);
                         if (placedGenerators < 7) {
                             player.getInventory().add(new ItemStack(ObjectiveBlocks.GENERATOR, 7 - placedGenerators));
                         }
                         if (placedGates < 2) {
                             player.getInventory().add(new ItemStack(ObjectiveBlocks.EXIT_GATE, 2 - placedGates));
+                        }
+                        if (placedPallets < 4) {
+                            player.getInventory().add(new ItemStack(ObjectiveBlocks.PALLET, 4 - placedPallets));
                         }
                         Husk killer = EntityType.HUSK.create(level);
                         if (killer != null) {
@@ -227,9 +268,11 @@ public final class ProjectEntity implements ModInitializer {
                         int bots = SurvivorBotAI.spawnFor(player, 3);
                         int finalGenerators = placedGenerators;
                         int finalGates = placedGates;
+                        int finalPallets = placedPallets;
                         context.getSource().sendSuccess(() -> Component.literal(
-                            "Solo demo started. Role: SURVIVOR. Spawned a killer and " + bots + " survivor bots. Auto-placed " + finalGenerators
-                                + "/7 generators and " + finalGates + "/2 gates near you; remaining objectives are in your inventory."), false);
+                            "Solo demo started. Role: SURVIVOR. Spawned a killer and " + bots + " survivor bots. Auto-placed "
+                                + finalGenerators + "/7 generators, " + finalGates + "/2 gates and " + finalPallets
+                                + "/4 pallets; any remaining blocks are in your inventory."), false);
                         return 1;
                     }))
                 .then(Commands.literal("debug")
@@ -271,13 +314,15 @@ public final class ProjectEntity implements ModInitializer {
                         for (ServerLevel level : context.getSource().getServer().getAllLevels()) {
                             for (var pos : objectivePositions) {
                                 var block = level.getBlockState(pos);
-                                if (block.is(ObjectiveBlocks.GENERATOR) || block.is(ObjectiveBlocks.EXIT_GATE)) {
+                                if (block.is(ObjectiveBlocks.GENERATOR) || block.is(ObjectiveBlocks.EXIT_GATE)
+                                    || block.is(ObjectiveBlocks.PALLET) || block.is(ObjectiveBlocks.DROPPED_PALLET)) {
                                     level.removeBlock(pos, false);
                                 }
                             }
                         }
                         removeDemoEntities(context.getSource().getServer());
                         MatchManager.reset();
+                        KillerBotAI.reset();
                         context.getSource().sendSuccess(() -> Component.literal("Match state, roles, objectives, demo killer and survivor bots reset."), false);
                         return 1;
                     }))
