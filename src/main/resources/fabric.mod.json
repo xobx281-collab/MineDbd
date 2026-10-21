@@ -1,0 +1,23 @@
+{
+  "schemaVersion": 1,
+  "id": "project_entity",
+  "version": "${version}",
+  "name": "Project Entity",
+  "description": "An original asymmetrical survival-horror game mode for Minecraft.",
+  "authors": ["Project Entity Team"],
+  "contact": {
+    "sources": "https://github.com/xobx281-collab/MineDbd"
+  },
+  "license": "All-Rights-Reserved",
+  "environment": "*",
+  "entrypoints": {
+    "main": ["dev.projectentity.ProjectEntity"],
+    "client": ["dev.projectentity.client.ProjectEntityClient"]
+  },
+  "depends": {
+    "fabricloader": ">=0.19.5",
+    "minecraft": "~1.21.1",
+    "java": ">=21",
+    "fabric-api": "*"
+  }
+}
