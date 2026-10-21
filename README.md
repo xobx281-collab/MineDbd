@@ -14,8 +14,8 @@ An original Minecraft Java Edition asymmetrical survival-horror game mode inspir
 The mod has an early in-world objective loop:
 1. Install the built mod JAR in a Minecraft 1.21.1 Fabric client with Java 21 and Fabric API.
 2. Open a backup copy of the supplied world with commands available.
-3. Run `/entity demo` to start a test match, assign the player as survivor, receive seven generator blocks and two exit-gate consoles, and spawn a hostile vanilla Husk as a temporary killer.
-4. Place the objective blocks in safe, open areas. Right-click each generator eight times to repair it.
+3. Run `/entity demo` to start a test match, assign the player as survivor, auto-place objectives on nearby safe floor surfaces, and spawn a hostile vanilla Husk plus three survivor bots.
+4. If the map does not provide enough nearby safe surfaces, remaining objective blocks are given to the player for manual placement. Right-click each generator eight times to repair it; survivor bots seek placed generators and contribute progress.
 5. Repair five distinct generators to enter endgame, then right-click an Exit Gate Console to finish with a survivor victory.
 6. Run `/entity status` to inspect the phase, role and objective count. An operator can run `/entity reset` to clear match state and the tagged demo killer.
 
