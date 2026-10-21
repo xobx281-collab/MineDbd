@@ -13,7 +13,7 @@
 - [x] A tagged hostile Husk serves as the temporary killer; its hits feed server-side two-hit survivor condition logic.
 - [x] Three villager-based survivor bots seek placed generators, contribute repair progress and move toward gates during endgame.
 - [x] Survivor state model includes healthy, injured, downed, carried, captured, escaped and eliminated; healing, revival, three capture stages, rescue and escape transitions have unit tests.
-- [x] Survivor victory can be triggered by reaching a powered exit; killer victory is triggered when every survivor is downed.
+- [x] Powered exit gates require ten interactions to open before survivors can escape; killer victory is triggered when every survivor is downed.
 - [x] /entity status, /entity role survivor|killer and operator /entity reset commands.
 - [x] User-supplied Dead By Daylight / Freddy Fazbear's world is the canonical arena; archive metadata identifies Minecraft 1.21.1.
 
