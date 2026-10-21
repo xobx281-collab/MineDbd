@@ -99,6 +99,7 @@ public final class SurvivorBotAI {
                         server.getPlayerList().broadcastSystemMessage(
                             net.minecraft.network.chat.Component.literal("SURVIVOR VICTORY — a survivor bot opened the exit and escaped."), false);
                         KillerBotAI.reset();
+                        TrapAI.reset();
                         for (ServerLevel cleanupLevel : server.getAllLevels()) {
                             for (Entity cleanupEntity : cleanupLevel.getAllEntities()) {
                                 if (cleanupEntity.getTags().contains("project_entity_killer")
