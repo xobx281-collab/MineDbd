@@ -8,8 +8,11 @@ import dev.projectentity.game.MatchState;
 import dev.projectentity.game.ObjectiveBlocks;
 import dev.projectentity.game.ObjectiveProgress;
 import dev.projectentity.game.PlayerRole;
+import dev.projectentity.game.SurvivorCondition;
+import dev.projectentity.game.SurvivorState;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
+import net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.event.player.UseBlockCallback;
 import net.minecraft.commands.Commands;
@@ -19,7 +22,11 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.monster.Husk;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import org.slf4j.Logger;
@@ -35,6 +42,33 @@ public final class ProjectEntity implements ModInitializer {
         ObjectiveBlocks.GENERATOR.getDescriptionId();
         ServerLifecycleEvents.SERVER_STARTED.register(server -> MatchManager.reset());
         ServerLifecycleEvents.SERVER_STOPPED.register(server -> MatchManager.reset());
+
+        // A hit from the tagged demo killer becomes a server-owned two-hit condition
+        // rather than normal Minecraft damage. Full downed/carry/rescue presentation
+        // is a later milestone; this keeps the early test loop from instantly killing players.
+        ServerLivingEntityEvents.ALLOW_DAMAGE.register((entity, source, amount) -> {
+            if (!(entity instanceof ServerPlayer player)) return true;
+            var attacker = source.getEntity();
+            if (attacker == null || !attacker.getTags().contains("project_entity_killer")) return true;
+            MatchState match = MatchManager.current();
+            if (match.phase() != MatchPhase.ACTIVE && match.phase() != MatchPhase.ENDGAME) return true;
+            if (MatchManager.role(player.getUUID()) != PlayerRole.SURVIVOR) return true;
+
+            SurvivorState survivor = MatchManager.survivorState(player.getUUID());
+            boolean changed = survivor.takeHit();
+            SurvivorCondition condition = survivor.condition();
+            if (condition == SurvivorCondition.INJURED) {
+                player.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 80, 0));
+                player.displayClientMessage(Component.literal("INJURED — the killer has hit you once."), false);
+            } else if (condition == SurvivorCondition.DOWNED) {
+                player.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 120, 3));
+                player.displayClientMessage(Component.literal("DOWNED — you need help to recover. Carry and rescue interactions are still in development."), false);
+            } else if (!changed) {
+                player.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 80, 3));
+                player.displayClientMessage(Component.literal("You are downed. Escape and rescue mechanics are not yet implemented."), true);
+            }
+            return false;
+        });
 
         UseBlockCallback.EVENT.register((player, world, hand, hit) -> {
             if (world.isClientSide()) return InteractionResult.PASS;
@@ -94,6 +128,7 @@ public final class ProjectEntity implements ModInitializer {
                             + " | Role: " + (role == null ? "unselected" : role)
                             + " | Generators: " + state.completedGeneratorCount()
                             + "/" + state.requiredGenerators()
+                            + " | Survivor: " + (player == null ? "n/a" : MatchManager.survivorState(player.getUUID()).condition())
                     ), false);
                     return 1;
                 }))
