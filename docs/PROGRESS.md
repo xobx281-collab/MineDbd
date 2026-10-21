@@ -1,40 +1,41 @@
 # Project Entity Progress
 
 ## Current milestone
-**Milestone 2 — First in-world gameplay slice (in progress).**
+**Milestone 2 — First gameplay slice (in progress).**
 
-## Implemented in repository
-- [x] Project instructions, game design, architecture notes and acceptance test plan.
-- [x] Fabric mod project targeting Minecraft 1.21.1 / Java 21.
-- [x] Gradle wrapper and GitHub Actions build workflow.
-- [x] Explicit server-owned match phases and victory/result state.
-- [x] Seven generator slots with five required to power the exit phase.
-- [x] Placeable Generator and Exit Gate Console blocks, with block/item models and English/Russian names.
-- [x] `/entity demo` starts a solo test match, selects the survivor role and gives objective blocks.
-- [x] `/entity role survivor|killer` and `/entity status` commands.
+## Implemented
+- [x] Project instructions, game design, architecture notes, acceptance test plan and map integration notes.
+- [x] Minecraft 1.21.1 / Java 21 / Fabric project and GitHub Actions build.
+- [x] Stable Fabric Loom 1.15.5; Gradle configuration-cache setting disabled while compatibility is established.
+- [x] CI clean build and automated tests pass on the verification PR (GitHub Actions run 46). The build produced the remapped mod JAR and uploaded it as a temporary artifact.
+- [x] Server-owned match phases and victory/result state, with unit tests.
+- [x] Seven generator slots; five completed generators trigger endgame.
+- [x] Placeable Generator and Exit Gate Console blocks, temporary vanilla-based models and English/Russian names.
+- [x] /entity demo starts a solo test match, assigns the player as survivor and provides objective blocks.
+- [x] The solo demo now spawns a tagged hostile Husk as a basic killer prototype; /entity reset removes tagged demo killers.
+- [x] /entity role survivor|killer and /entity status commands.
 - [x] Server-side generator interaction progress, distinct-generator tracking and survivor escape condition.
-- [x] Match-state unit tests for phase transitions, objective threshold, reset and invalid configurations.
-- [x] CI configured to run a clean Gradle build/tests and upload the JAR as a temporary artifact on success.
+- [x] The user-supplied Dead By Daylight / Freddy Fazbear's world is the canonical arena. Its metadata matches Minecraft 1.21.1.
 
-## Verification status
+## Verified vs unverified
+- [x] CI clean build succeeded.
+- [x] Automated Gradle/JUnit test task completed successfully.
+- [ ] Minecraft client launch and in-game behavior verified.
+- [ ] Dedicated server launch verified.
+- [ ] Supplied arena opened in-game and its safe spawns / routes recorded.
+- [ ] Objective blocks automatically placed at configured map points.
+- [ ] Survivor health/downed/carry/capture/rescue system.
+- [ ] Pallets, stuns, traps and killer powers.
+- [ ] AI survivor teammates; current solo slice has only a basic hostile killer mob.
+- [ ] Lobby/HUD, custom models, animations, sounds and map dressing.
+- [ ] Five-client multiplayer and packaged client/server distribution.
 
-The first CI run successfully compiled the main and client sources and produced remapped JAR tasks, then failed during test execution because Gradle 9 could not load the JUnit Platform launcher. The launcher dependency is now declared as a test runtime dependency; the next clean CI run is the verification gate.
-- [ ] Clean Gradle build has been observed and confirmed.
-- [ ] Automated tests have passed in CI.
-- [ ] Development client launch and in-game interaction verified.
-- [ ] Dedicated server launch.
-- [ ] AI killer and AI survivors.
-- [ ] Combat, injury/downed/carry/capture/rescue, pallets and traps.
-- [ ] Custom map, lobby/HUD, original models/animations/audio.
-- [ ] Five-client multiplayer and client/server distribution.
-
-**Important:** the objective mechanics are implemented in source but have not yet been confirmed by a successful build or live Minecraft session. The current slice is not a finished game. The objective blocks use temporary vanilla-based visuals, and the match has no AI or killer combat yet.
+CI success proves the code compiles and automated tests pass; it does not prove the mod loads or behaves correctly in a live Minecraft client. The current JAR is a development prototype, not a finished game.
 
 ## Next actions
-1. Obtain a real CI result and fix compile/test failures.
-2. Verify the mod in a Minecraft client; fix any mapping/API or interaction issues.
-3. Add a simple arena and meaningful solo AI.
-4. Implement the killer/survivor interaction loop, then improve presentation and multiplayer.
-
-## Owner-facing status
-The repo has advanced beyond the state-only scaffold: it now contains a first in-world objective loop and an exit condition. A download should not be offered until CI succeeds and the behavior is tested honestly.
+1. Validate the mod in Minecraft 1.21.1 on the supplied world.
+2. Add persistent arena-point configuration and objective placement based on the actual map.
+3. Implement survivor hit/downed states and meaningful chase interactions.
+4. Add survivor AI, then pallets, traps, gates, match-end flow and presentation.
+5. Build the repeatable match loop and dedicated-server test.
+6. Package a release only after the client and server have been launched and smoke-tested.
