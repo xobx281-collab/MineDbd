@@ -33,13 +33,23 @@ public final class ObjectiveBlocks {
                 }
             }
         });
+    public static final Block PALLET = registerBlock("pallet",
+        new Block(BlockBehaviour.Properties.of().strength(2.0F).requiresCorrectToolForDrops()));
+    public static final Block DROPPED_PALLET = registerBlock("dropped_pallet",
+        new Block(BlockBehaviour.Properties.of().strength(3.0F).requiresCorrectToolForDrops()), false);
 
     private ObjectiveBlocks() {}
 
     private static Block registerBlock(String path, Block block) {
+        return registerBlock(path, block, true);
+    }
+
+    private static Block registerBlock(String path, Block block, boolean registerItem) {
         ResourceLocation id = ResourceLocation.fromNamespaceAndPath("project_entity", path);
         Registry.register(BuiltInRegistries.BLOCK, id, block);
-        Registry.register(BuiltInRegistries.ITEM, id, new BlockItem(block, new Item.Properties()));
+        if (registerItem) {
+            Registry.register(BuiltInRegistries.ITEM, id, new BlockItem(block, new Item.Properties()));
+        }
         return block;
     }
 }
