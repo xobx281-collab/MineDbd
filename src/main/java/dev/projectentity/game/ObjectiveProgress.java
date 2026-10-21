@@ -2,8 +2,10 @@ package dev.projectentity.game;
 
 import net.minecraft.core.BlockPos;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -13,23 +15,49 @@ public final class ObjectiveProgress {
     private static final Map<BlockPos, Integer> progress = new HashMap<>();
     private static final Map<BlockPos, Integer> generatorIds = new HashMap<>();
     private static final Set<Integer> assignedIds = new HashSet<>();
+    private static final Set<BlockPos> exitGates = new HashSet<>();
 
     private ObjectiveProgress() {}
+
+    public static synchronized void registerGenerator(BlockPos position, MatchState match) {
+        BlockPos key = position.immutable();
+        if (generatorIds.containsKey(key)) return;
+        for (int candidate = 0; candidate < match.generatorCount(); candidate++) {
+            if (!assignedIds.contains(candidate)) {
+                assignedIds.add(candidate);
+                generatorIds.put(key, candidate);
+                return;
+            }
+        }
+    }
+
+    public static synchronized void registerExitGate(BlockPos position) {
+        exitGates.add(position.immutable());
+    }
+
+    public static synchronized List<BlockPos> availableGenerators(MatchState match) {
+        List<BlockPos> result = new ArrayList<>();
+        for (Map.Entry<BlockPos, Integer> entry : generatorIds.entrySet()) {
+            if (!match.isGeneratorComplete(entry.getValue())) result.add(entry.getKey());
+        }
+        return result;
+    }
+
+    public static synchronized List<BlockPos> exitGates() {
+        return new ArrayList<>(exitGates);
+    }
+
+    public static synchronized List<BlockPos> allObjectivePositions() {
+        List<BlockPos> result = new ArrayList<>(generatorIds.keySet());
+        result.addAll(exitGates);
+        return result;
+    }
 
     public static synchronized int repair(BlockPos position, MatchState match) {
         if (match.phase() != MatchPhase.ACTIVE) return -1;
         BlockPos key = position.immutable();
+        if (!generatorIds.containsKey(key)) registerGenerator(key, match);
         Integer id = generatorIds.get(key);
-        if (id == null) {
-            for (int candidate = 0; candidate < match.generatorCount(); candidate++) {
-                if (!assignedIds.contains(candidate)) {
-                    id = candidate;
-                    assignedIds.add(candidate);
-                    generatorIds.put(key, id);
-                    break;
-                }
-            }
-        }
         if (id == null) return -2;
         if (match.isGeneratorComplete(id)) return -3;
         int next = Math.min(CLICKS_TO_REPAIR, progress.getOrDefault(key, 0) + 1);
@@ -45,5 +73,6 @@ public final class ObjectiveProgress {
         progress.clear();
         generatorIds.clear();
         assignedIds.clear();
+        exitGates.clear();
     }
 }
