@@ -128,6 +128,11 @@ public final class ProjectEntity implements ModInitializer {
                     player.displayClientMessage(Component.literal("Only survivors can escape through the exit gate."), true);
                 } else if (match.phase() != MatchPhase.ENDGAME) {
                     player.displayClientMessage(Component.literal("The exit gate has no power. Complete five generators first."), true);
+                } else if (MatchManager.survivorState(player.getUUID()).condition() == SurvivorCondition.DOWNED
+                    || MatchManager.survivorState(player.getUUID()).condition() == SurvivorCondition.CARRIED
+                    || MatchManager.survivorState(player.getUUID()).condition() == SurvivorCondition.CAPTURED
+                    || MatchManager.survivorState(player.getUUID()).condition() == SurvivorCondition.ELIMINATED) {
+                    player.displayClientMessage(Component.literal("You cannot escape while downed or captured."), true);
                 } else if (finishMatch(player.serverLevel(), false)) {
                     player.displayClientMessage(Component.literal("ESCAPED — Survivor victory! Use /entity reset before another test."), false);
                 } else {
