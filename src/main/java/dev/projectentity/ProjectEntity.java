@@ -350,6 +350,7 @@ public final class ProjectEntity implements ModInitializer {
         level.getServer().getPlayerList().broadcastSystemMessage(Component.literal(result), false);
         removeDemoEntities(level.getServer());
         KillerBotAI.reset();
+        TrapAI.reset();
         return true;
     }
 
