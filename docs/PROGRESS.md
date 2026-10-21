@@ -6,7 +6,7 @@
 ## Implemented in source
 - [x] Minecraft Java 1.21.1 / Java 21 / Fabric mod project.
 - [x] Stable Fabric Loom 1.15.5 and GitHub Actions build/test workflow.
-- [x] Latest clean CI build and automated tests passed (GitHub Actions run 82). A remapped mod JAR artifact was produced.
+- [x] Latest clean CI build and automated tests passed for the gate/pallet prototype (GitHub Actions run 111). A remapped mod JAR artifact was produced.
 - [x] Server-owned match phases, seven generator slots and five-generator endgame threshold.
 - [x] Placeable Generator and Exit Gate Console blocks with temporary vanilla-based models and English/Russian names.
 - [x] /entity demo starts a solo test match, assigns the player as survivor, attempts to place objectives on nearby safe surfaces, and gives any objectives it cannot place as items.
@@ -28,7 +28,8 @@ A fresh clean build is required after adding killer snares and the trap registra
 - [ ] Verify dedicated server launch.
 - [ ] Implement carry/capture/rescue as actual world interactions, not only rule-model transitions.
 - [x] Basic pallet loop: survivors drop a pallet, a nearby killer is stunned, and the killer can break a dropped pallet after reaching it. The block visuals/collision remain placeholders.
-- [ ] Add traps and killer powers.
+- [x] Human killer role receives three one-shot snare traps; survivor players and bot teammates trigger them and are slowed briefly.
+- [ ] Add richer killer powers, trap escape/disarm interactions and better trap feedback.
 - [ ] Replace temporary vanilla mobs/blocks with original custom entities, models, animations, sounds and HUD.
 - [ ] Complete five-client multiplayer and package a tested client/server release.
 
@@ -37,7 +38,7 @@ CI success confirms compilation and automated tests only. The current prototype 
 
 ## Next actions
 1. Validate objective placement and mob spawning on the supplied world.
-2. Add actual downed/carry/capture/rescue interactions and pallet stuns.
+2. Add actual downed/carry/capture/rescue interactions and improve pallet/trap presentation.
 3. Add killer abilities and smarter survivor behavior.
 4. Implement skill checks, gate-opening delay, match timer and player-facing HUD.
 5. Add dedicated-server validation and multiplayer synchronization.
