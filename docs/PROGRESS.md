@@ -18,6 +18,8 @@
 - [x] User-supplied Dead By Daylight / Freddy Fazbear's world is the canonical arena; archive metadata identifies Minecraft 1.21.1.
 
 ## Verification status
+
+A clean build and unit-test run is required after the latest survivor-state victory checks, bot exit completion, and MatchManager tests.
 - [x] Earlier CI run passed clean build and automated tests for auto-placement and bot navigation (GitHub Actions run 70).
 - [ ] Run a fresh CI build after the latest match-end conditions and tests.
 - [ ] Launch Minecraft 1.21.1 with the mod and supplied arena.
