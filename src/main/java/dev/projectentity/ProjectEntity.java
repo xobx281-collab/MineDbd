@@ -10,6 +10,7 @@ import dev.projectentity.game.ObjectiveProgress;
 import dev.projectentity.game.PlayerRole;
 import dev.projectentity.game.SurvivorCondition;
 import dev.projectentity.game.SurvivorState;
+import dev.projectentity.game.SurvivorBotAI;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents;
@@ -42,30 +43,42 @@ public final class ProjectEntity implements ModInitializer {
         ObjectiveBlocks.GENERATOR.getDescriptionId();
         ServerLifecycleEvents.SERVER_STARTED.register(server -> MatchManager.reset());
         ServerLifecycleEvents.SERVER_STOPPED.register(server -> MatchManager.reset());
+        SurvivorBotAI.register();
 
         // A hit from the tagged demo killer becomes a server-owned two-hit condition
         // rather than normal Minecraft damage. Full downed/carry/rescue presentation
         // is a later milestone; this keeps the early test loop from instantly killing players.
         ServerLivingEntityEvents.ALLOW_DAMAGE.register((entity, source, amount) -> {
-            if (!(entity instanceof ServerPlayer player)) return true;
+            if (!(entity instanceof LivingEntity living)) return true;
             var attacker = source.getEntity();
             if (attacker == null || !attacker.getTags().contains("project_entity_killer")) return true;
             MatchState match = MatchManager.current();
             if (match.phase() != MatchPhase.ACTIVE && match.phase() != MatchPhase.ENDGAME) return true;
-            if (MatchManager.role(player.getUUID()) != PlayerRole.SURVIVOR) return true;
 
-            SurvivorState survivor = MatchManager.survivorState(player.getUUID());
+            if (living instanceof ServerPlayer player) {
+                if (MatchManager.role(player.getUUID()) != PlayerRole.SURVIVOR) return true;
+            } else if (!living.getTags().contains(SurvivorBotAI.BOT_TAG)) {
+                return true;
+            }
+
+            SurvivorState survivor = MatchManager.survivorState(living.getUUID());
             boolean changed = survivor.takeHit();
             SurvivorCondition condition = survivor.condition();
             if (condition == SurvivorCondition.INJURED) {
-                player.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 80, 0));
-                player.displayClientMessage(Component.literal("INJURED — the killer has hit you once."), false);
+                living.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 80, 0));
+                if (living instanceof ServerPlayer player) {
+                    player.displayClientMessage(Component.literal("INJURED — the killer has hit you once."), false);
+                }
             } else if (condition == SurvivorCondition.DOWNED) {
-                player.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 120, 3));
-                player.displayClientMessage(Component.literal("DOWNED — you need help to recover. Carry and rescue interactions are still in development."), false);
+                living.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 120, 3));
+                if (living instanceof ServerPlayer player) {
+                    player.displayClientMessage(Component.literal("DOWNED — you need help to recover. Carry and rescue interactions are still in development."), false);
+                }
             } else if (!changed) {
-                player.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 80, 3));
-                player.displayClientMessage(Component.literal("You are downed. Escape and rescue mechanics are not yet implemented."), true);
+                living.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 80, 3));
+                if (living instanceof ServerPlayer player) {
+                    player.displayClientMessage(Component.literal("You are downed. Escape and rescue mechanics are not yet implemented."), true);
+                }
             }
             return false;
         });
@@ -179,8 +192,9 @@ public final class ProjectEntity implements ModInitializer {
                             killer.setTarget(player);
                             level.addFreshEntity(killer);
                         }
+                        int bots = SurvivorBotAI.spawnFor(player, 3);
                         context.getSource().sendSuccess(() -> Component.literal(
-                            "Solo demo started. Role: SURVIVOR. A hostile killer is hunting you. Place seven Generators and two Exit Gates, then right-click each generator eight times. Five completed generators power the gates."), false);
+                            "Solo demo started. Role: SURVIVOR. A hostile killer and " + bots + " survivor bots have spawned. Place seven Generators and two Exit Gates; bots will seek and repair placed generators."), false);
                         return 1;
                     }))
                 .then(Commands.literal("debug")
@@ -220,13 +234,13 @@ public final class ProjectEntity implements ModInitializer {
                     .then(Commands.literal("reset").executes(context -> {
                         for (ServerLevel level : context.getSource().getServer().getAllLevels()) {
                             for (Entity entity : level.getAllEntities()) {
-                                if (entity.getTags().contains("project_entity_killer")) {
+                                if (entity.getTags().contains("project_entity_killer") || entity.getTags().contains(SurvivorBotAI.BOT_TAG)) {
                                     entity.discard();
                                 }
                             }
                         }
                         MatchManager.reset();
-                        context.getSource().sendSuccess(() -> Component.literal("Match state, roles, objectives and demo killer reset."), false);
+                        context.getSource().sendSuccess(() -> Component.literal("Match state, roles, objectives, demo killer and survivor bots reset."), false);
                         return 1;
                     }))
                 )
