@@ -2,5 +2,6 @@
   "block.project_entity.generator": "Повреждённый генератор",
   "block.project_entity.exit_gate": "Пульт выходных ворот",
   "block.project_entity.pallet": "Стоящий палет",
-  "block.project_entity.dropped_pallet": "Сброшенный палет"
+  "block.project_entity.dropped_pallet": "Сброшенный палет",
+  "block.project_entity.trap": "Капкан убийцы"
 }
