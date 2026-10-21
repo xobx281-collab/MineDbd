@@ -4,27 +4,33 @@
 **Milestone 1 — Foundation (in progress).**
 
 ## Implemented in repository
-- [x] Connected repository identified: `xobx281-collab/MineDbd`.
-- [x] Initial project documentation and repository rules.
-- [x] Initial Fabric mod build files for Minecraft 1.21.1 / Java 21.
+- [x] Project instructions, game design, architecture notes and acceptance test plan.
+- [x] Initial Fabric mod project for Minecraft 1.21.1 / Java 21.
+- [x] Gradle wrapper scripts and wrapper JAR.
+- [x] Automated GitHub Actions build workflow.
 - [x] Common and client mod entrypoints.
-- [x] Git ignore and project license notice.
+- [x] Explicit match phases: lobby, preparation, countdown, active, endgame and results.
+- [x] Server-side match-state rules with seven generator slots and a five-generator endgame threshold.
+- [x] Initial unit tests for phase transitions, generator validation and results/reset behavior.
+- [x] Operator-only `/entity debug` commands to exercise the state scaffold.
 
-## Not yet verified
-- [ ] Gradle wrapper is present and working.
-- [ ] Dependency resolution and clean build.
+## Verification status
+- [ ] Clean Gradle build has been observed and confirmed.
+- [ ] Automated tests have passed in CI.
 - [ ] Development client launch.
 - [ ] Dedicated server launch.
-- [ ] Any playable gameplay feature.
-- [ ] AI or solo match.
-- [ ] Multiplayer.
+- [ ] In-game match and objectives.
+- [ ] Bots, chases, traps, custom map, animations/audio and polished UI.
+- [ ] Five-client multiplayer.
 - [ ] Client/server distribution.
 
+The debug commands only test the current state scaffold. They do **not** represent a playable match, and no bot or generator world object has been implemented yet.
+
 ## Next actions
-1. Add a reproducible Gradle wrapper and automated build workflow.
-2. Verify clean build and fix any compatibility/build issues.
-3. Add initial match state and in-game start controls.
-4. Build a complete playable vertical slice before expanding features.
+1. Confirm the first CI build and fix any build errors.
+2. Add an actual lobby/start flow rather than command-only testing.
+3. Implement player roles and the first visible gameplay objective.
+4. Build toward a complete playable solo vertical slice, including useful bots and real win/loss outcomes.
 
 ## Owner-facing status
-Project files have started appearing in GitHub, but there is not yet a playable game. Do not install or test it as a mod until a release artifact and working installation guide exist.
+The repository now has a real mod project foundation and the first tested-in-design match rules, but gameplay has not yet been verified in Minecraft. Do not install it as a playable game yet.
