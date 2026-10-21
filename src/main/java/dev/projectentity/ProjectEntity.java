@@ -133,6 +133,14 @@ public final class ProjectEntity implements ModInitializer {
                     || MatchManager.survivorState(player.getUUID()).condition() == SurvivorCondition.CAPTURED
                     || MatchManager.survivorState(player.getUUID()).condition() == SurvivorCondition.ELIMINATED) {
                     player.displayClientMessage(Component.literal("You cannot escape while downed or captured."), true);
+                } else if (!ObjectiveProgress.isGateOpen(hit.getBlockPos())) {
+                    int progress = ObjectiveProgress.openGate(hit.getBlockPos(), match);
+                    if (progress >= ObjectiveProgress.CLICKS_TO_OPEN_GATE) {
+                        player.displayClientMessage(Component.literal("EXIT GATE OPEN — interact again to escape."), false);
+                    } else {
+                        player.displayClientMessage(Component.literal("Opening exit gate: " + progress
+                            + "/" + ObjectiveProgress.CLICKS_TO_OPEN_GATE), true);
+                    }
                 } else if (finishMatch((ServerLevel) world, false)) {
                     player.displayClientMessage(Component.literal("ESCAPED — Survivor victory! Use /entity reset before another test."), false);
                 } else {
