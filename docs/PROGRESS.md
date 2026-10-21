@@ -1,12 +1,12 @@
 # Project Entity Progress
 
 ## Current milestone
-**Milestone 2 — First gameplay loop (in progress).**
+**Milestone 2 — First complete solo-loop prototype (in progress).**
 
 ## Implemented in source
 - [x] Minecraft Java 1.21.1 / Java 21 / Fabric mod project.
 - [x] Stable Fabric Loom 1.15.5 and GitHub Actions build/test workflow.
-- [x] Earlier clean CI runs compiled and tested the objective prototype; the latest win-condition changes require another clean CI run.
+- [x] Latest clean CI build and automated tests passed (GitHub Actions run 82). A remapped mod JAR artifact was produced.
 - [x] Server-owned match phases, seven generator slots and five-generator endgame threshold.
 - [x] Placeable Generator and Exit Gate Console blocks with temporary vanilla-based models and English/Russian names.
 - [x] /entity demo starts a solo test match, assigns the player as survivor, attempts to place objectives on nearby safe surfaces, and gives any objectives it cannot place as items.
@@ -18,12 +18,10 @@
 - [x] User-supplied Dead By Daylight / Freddy Fazbear's world is the canonical arena; archive metadata identifies Minecraft 1.21.1.
 
 ## Verification status
-
-A clean build and unit-test run is required after the latest survivor-state victory checks, bot exit completion, and MatchManager tests.
-- [x] Earlier CI run passed clean build and automated tests for auto-placement and bot navigation (GitHub Actions run 70).
-- [ ] Run a fresh CI build after the latest match-end conditions and tests.
+- [x] Latest clean CI build succeeded after match-end fixes.
+- [x] Automated JUnit tests passed, including match phases, generator threshold, survivor state transitions and killer win condition.
 - [ ] Launch Minecraft 1.21.1 with the mod and supplied arena.
-- [ ] Verify that automatic objective placement selects safe, reachable surfaces on this specific map.
+- [ ] Verify automatic objective placement selects safe, reachable surfaces on this specific map.
 - [ ] Verify bot navigation, generator progress, injury/downed feedback and both win conditions in-game.
 - [ ] Verify dedicated server launch.
 - [ ] Implement carry/capture/rescue as actual world interactions, not only rule-model transitions.
@@ -32,11 +30,12 @@ A clean build and unit-test run is required after the latest survivor-state vict
 - [ ] Complete five-client multiplayer and package a tested client/server release.
 
 ## Honest boundary
-CI success confirms compilation and automated tests only. The current prototype has not been launched in a Minecraft client, and the map's actual geometry has not been inspected in-game. The current artifact is not a finished game.
+CI success confirms compilation and automated tests only. The current prototype has not been launched in a Minecraft client, and the map's actual geometry has not been inspected in-game. The current artifact is an early prototype, not a finished game.
 
 ## Next actions
-1. Verify the latest source with a clean CI build.
-2. Use the first build to validate automatic objective placement in the supplied world.
-3. Fix any map-specific placement/pathfinding issues.
-4. Build proper survivor downed/carry/capture/rescue interactions and the pallet/trap chase loop.
-5. Continue to multiplayer, presentation and final packaging only after the solo loop is stable.
+1. Validate objective placement and mob spawning on the supplied world.
+2. Add actual downed/carry/capture/rescue interactions and pallet stuns.
+3. Add killer abilities and smarter survivor behavior.
+4. Implement skill checks, gate-opening delay, match timer and player-facing HUD.
+5. Add dedicated-server validation and multiplayer synchronization.
+6. Replace temporary visuals and audio, then package a release only after live smoke tests.
