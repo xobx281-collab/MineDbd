@@ -79,6 +79,9 @@ public final class ProjectEntity implements ModInitializer {
                 if (living instanceof ServerPlayer player) {
                     player.displayClientMessage(Component.literal("DOWNED — you need help to recover. Carry and rescue interactions are still in development."), false);
                 }
+                if (MatchManager.allSurvivorsDowned()) {
+                    finishMatch((ServerLevel) living.level(), true);
+                }
             } else if (!changed) {
                 living.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 80, 3));
                 if (living instanceof ServerPlayer player) {
@@ -125,7 +128,7 @@ public final class ProjectEntity implements ModInitializer {
                     player.displayClientMessage(Component.literal("Only survivors can escape through the exit gate."), true);
                 } else if (match.phase() != MatchPhase.ENDGAME) {
                     player.displayClientMessage(Component.literal("The exit gate has no power. Complete five generators first."), true);
-                } else if (match.finish(false)) {
+                } else if (finishMatch(player.serverLevel(), false)) {
                     player.displayClientMessage(Component.literal("ESCAPED — Survivor victory! Use /entity reset before another test."), false);
                 } else {
                     player.displayClientMessage(Component.literal("The match has already ended."), true);
@@ -259,12 +262,8 @@ public final class ProjectEntity implements ModInitializer {
                                     level.removeBlock(pos, false);
                                 }
                             }
-                            for (Entity entity : level.getAllEntities()) {
-                                if (entity.getTags().contains("project_entity_killer") || entity.getTags().contains(SurvivorBotAI.BOT_TAG)) {
-                                    entity.discard();
-                                }
-                            }
                         }
+                        removeDemoEntities(context.getSource().getServer());
                         MatchManager.reset();
                         context.getSource().sendSuccess(() -> Component.literal("Match state, roles, objectives, demo killer and survivor bots reset."), false);
                         return 1;
@@ -274,6 +273,28 @@ public final class ProjectEntity implements ModInitializer {
         );
 
         LOGGER.info("Project Entity initialized. In-world generator and exit-gate objectives registered.");
+    }
+
+    private static boolean finishMatch(ServerLevel level, boolean killerVictory) {
+        MatchState match = MatchManager.current();
+        if (!match.finish(killerVictory)) return false;
+        String result = killerVictory
+            ? "KILLER VICTORY — all survivors are downed."
+            : "SURVIVOR VICTORY — the exit has been reached.";
+        level.getServer().getPlayerList().broadcastSystemMessage(Component.literal(result), false);
+        removeDemoEntities(level.getServer());
+        return true;
+    }
+
+    private static void removeDemoEntities(net.minecraft.server.MinecraftServer server) {
+        for (ServerLevel level : server.getAllLevels()) {
+            for (Entity entity : level.getAllEntities()) {
+                if (entity.getTags().contains("project_entity_killer")
+                    || entity.getTags().contains(SurvivorBotAI.BOT_TAG)) {
+                    entity.discard();
+                }
+            }
+        }
     }
 
     private static int placeObjectives(
