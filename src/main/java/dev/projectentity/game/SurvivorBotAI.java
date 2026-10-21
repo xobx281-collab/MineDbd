@@ -84,25 +84,29 @@ public final class SurvivorBotAI {
                 }
 
                 double distance = bot.distanceToSqr(Vec3.atCenterOf(target));
-                if (distance <= 6.25) {
-                    bot.getNavigation().stop();
-                    if (match.phase() == MatchPhase.ACTIVE) {
+                if (match.phase() == MatchPhase.ACTIVE) {
+                    if (distance <= 6.25) {
+                        bot.getNavigation().stop();
                         ObjectiveProgress.repair(target, match);
-                    } else if (distance <= 2.25) {
-                        if (survivor.escape() && match.finish(false)) {
-                            server.getPlayerList().broadcastSystemMessage(
-                                net.minecraft.network.chat.Component.literal("SURVIVOR VICTORY — a survivor bot reached the exit."), false);
-                            for (ServerLevel cleanupLevel : server.getAllLevels()) {
-                                for (Entity cleanupEntity : cleanupLevel.getAllEntities()) {
-                                    if (cleanupEntity.getTags().contains("project_entity_killer")
-                                        || cleanupEntity.getTags().contains(BOT_TAG)) {
-                                        cleanupEntity.discard();
-                                    }
+                    } else {
+                        bot.getNavigation().moveTo(target.getX() + 0.5, target.getY() + 0.5, target.getZ() + 0.5, 0.85);
+                    }
+                } else if (distance <= 2.25) {
+                    bot.getNavigation().stop();
+                    int gateProgress = ObjectiveProgress.openGate(target, match);
+                    if (gateProgress >= ObjectiveProgress.CLICKS_TO_OPEN_GATE
+                        && survivor.escape() && match.finish(false)) {
+                        server.getPlayerList().broadcastSystemMessage(
+                            net.minecraft.network.chat.Component.literal("SURVIVOR VICTORY — a survivor bot opened the exit and escaped."), false);
+                        for (ServerLevel cleanupLevel : server.getAllLevels()) {
+                            for (Entity cleanupEntity : cleanupLevel.getAllEntities()) {
+                                if (cleanupEntity.getTags().contains("project_entity_killer")
+                                    || cleanupEntity.getTags().contains(BOT_TAG)) {
+                                    cleanupEntity.discard();
                                 }
                             }
-                            return;
                         }
-                        bot.getNavigation().stop();
+                        return;
                     }
                 } else {
                     bot.getNavigation().moveTo(target.getX() + 0.5, target.getY() + 0.5, target.getZ() + 0.5, 0.85);
