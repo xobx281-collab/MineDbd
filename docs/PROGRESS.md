@@ -27,7 +27,8 @@ A fresh CI build is required after adding the ten-interaction exit gate sequence
 - [ ] Verify bot navigation, generator progress, injury/downed feedback and both win conditions in-game.
 - [ ] Verify dedicated server launch.
 - [ ] Implement carry/capture/rescue as actual world interactions, not only rule-model transitions.
-- [ ] Add pallets, stuns, traps and killer powers.
+- [x] Basic pallet loop: survivors drop a pallet, a nearby killer is stunned, and the killer can break a dropped pallet after reaching it. The block visuals/collision remain placeholders.
+- [ ] Add traps and killer powers.
 - [ ] Replace temporary vanilla mobs/blocks with original custom entities, models, animations, sounds and HUD.
 - [ ] Complete five-client multiplayer and package a tested client/server release.
 
