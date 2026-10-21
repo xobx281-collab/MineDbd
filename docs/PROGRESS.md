@@ -24,6 +24,8 @@
 
 ## Verified vs unverified
 
+A fresh CI run is required after adding safe-surface objective placement around the player and making the demo use that placement in the supplied arena.
+
 A fresh clean build is required after adding simple villager-based survivor bots, generator-position registration and reset cleanup. Their pathfinding and behavior still require live in-game verification.
 - [x] CI clean build succeeded.
 - [x] Automated Gradle/JUnit test task completed successfully.
