@@ -20,6 +20,7 @@ public final class ObjectiveProgress {
     private static final Map<BlockPos, Integer> gateProgress = new HashMap<>();
     private static final Set<BlockPos> openGates = new HashSet<>();
     private static final Set<BlockPos> pallets = new HashSet<>();
+    private static final Set<BlockPos> traps = new HashSet<>();
 
     private ObjectiveProgress() {}
 
@@ -41,6 +42,18 @@ public final class ObjectiveProgress {
 
     public static synchronized void registerPallet(BlockPos position) {
         pallets.add(position.immutable());
+    }
+
+    public static synchronized void registerTrap(BlockPos position) {
+        traps.add(position.immutable());
+    }
+
+    public static synchronized void unregisterTrap(BlockPos position) {
+        traps.remove(position.immutable());
+    }
+
+    public static synchronized List<BlockPos> trapPositions() {
+        return new ArrayList<>(traps);
     }
 
     public static synchronized List<BlockPos> availableGenerators(MatchState match) {
@@ -74,6 +87,7 @@ public final class ObjectiveProgress {
         List<BlockPos> result = new ArrayList<>(generatorIds.keySet());
         result.addAll(exitGates);
         result.addAll(pallets);
+        result.addAll(traps);
         return result;
     }
 
@@ -101,5 +115,6 @@ public final class ObjectiveProgress {
         gateProgress.clear();
         openGates.clear();
         pallets.clear();
+        traps.clear();
     }
 }
