@@ -12,6 +12,7 @@ import dev.projectentity.game.SurvivorCondition;
 import dev.projectentity.game.SurvivorState;
 import dev.projectentity.game.SurvivorBotAI;
 import dev.projectentity.game.KillerBotAI;
+import dev.projectentity.game.TrapAI;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents;
@@ -52,6 +53,7 @@ public final class ProjectEntity implements ModInitializer {
         ServerLifecycleEvents.SERVER_STOPPED.register(server -> MatchManager.reset());
         SurvivorBotAI.register();
         KillerBotAI.register();
+        TrapAI.register();
 
         // A hit from the tagged demo killer becomes a server-owned two-hit condition
         // rather than normal Minecraft damage. Full downed/carry/rescue presentation
@@ -220,7 +222,11 @@ public final class ProjectEntity implements ModInitializer {
                             }
                             var player = context.getSource().getPlayerOrException();
                             MatchManager.setRole(player.getUUID(), role);
-                            context.getSource().sendSuccess(() -> Component.literal("Role selected: " + role), false);
+                            if (role == PlayerRole.KILLER) {
+                                player.getInventory().add(new ItemStack(ObjectiveBlocks.TRAP, 3));
+                            }
+                            context.getSource().sendSuccess(() -> Component.literal("Role selected: " + role
+                                + (role == PlayerRole.KILLER ? " — three traps added to your inventory." : "")), false);
                             return 1;
                         })))
                 .then(Commands.literal("demo")
@@ -315,7 +321,8 @@ public final class ProjectEntity implements ModInitializer {
                             for (var pos : objectivePositions) {
                                 var block = level.getBlockState(pos);
                                 if (block.is(ObjectiveBlocks.GENERATOR) || block.is(ObjectiveBlocks.EXIT_GATE)
-                                    || block.is(ObjectiveBlocks.PALLET) || block.is(ObjectiveBlocks.DROPPED_PALLET)) {
+                                    || block.is(ObjectiveBlocks.PALLET) || block.is(ObjectiveBlocks.DROPPED_PALLET)
+                                    || block.is(ObjectiveBlocks.TRAP)) {
                                     level.removeBlock(pos, false);
                                 }
                             }
@@ -323,6 +330,7 @@ public final class ProjectEntity implements ModInitializer {
                         removeDemoEntities(context.getSource().getServer());
                         MatchManager.reset();
                         KillerBotAI.reset();
+                        TrapAI.reset();
                         context.getSource().sendSuccess(() -> Component.literal("Match state, roles, objectives, demo killer and survivor bots reset."), false);
                         return 1;
                     }))
