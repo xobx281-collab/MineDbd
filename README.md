@@ -17,7 +17,7 @@ The mod has an early in-world objective loop:
 3. Run `/entity demo` to start a test match, assign the player as survivor, auto-place objectives on nearby safe floor surfaces, and spawn a hostile vanilla Husk plus three survivor bots.
 4. If the map does not provide enough nearby safe surfaces, remaining objective blocks are given to the player for manual placement. Right-click each generator eight times to repair it; survivor bots seek placed generators and contribute progress.
 5. Repair five distinct generators to enter endgame, then right-click an Exit Gate Console to finish with a survivor victory.
-6. Run `/entity status` to inspect the phase, role and objective count. An operator can run `/entity reset` to clear match state and the tagged demo killer.
+6. Run `/entity status` to inspect the phase, role, survivor condition and objective count. A survivor can win by reaching a powered exit; the killer wins if every survivor is downed. An operator can run `/entity reset` to clear match state, objectives and demo entities.
 
 The Husk is only a temporary basic hostile-mob stand-in, not a custom killer AI. Survivor bots use simple objective-seeking behavior and are not yet tactically equivalent to DBD survivors. Objective blocks currently use temporary vanilla-based visuals. The map's actual spawn safety, arena geometry, objective positions and live client behavior have not yet been verified.
 
