@@ -31,7 +31,7 @@ public final class ObjectiveProgress {
             }
         }
         if (id == null) return -2;
-        if (match.isGeneratorComplete(id)) return 0;
+        if (match.isGeneratorComplete(id)) return -3;
         int next = Math.min(CLICKS_TO_REPAIR, progress.getOrDefault(key, 0) + 1);
         progress.put(key, next);
         if (next >= CLICKS_TO_REPAIR) {
