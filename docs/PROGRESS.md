@@ -1,36 +1,38 @@
 # Project Entity Progress
 
 ## Current milestone
-**Milestone 1 — Foundation (in progress).**
+**Milestone 2 — First in-world gameplay slice (in progress).**
 
 ## Implemented in repository
 - [x] Project instructions, game design, architecture notes and acceptance test plan.
-- [x] Initial Fabric mod project for Minecraft 1.21.1 / Java 21.
-- [x] Gradle wrapper scripts and wrapper JAR.
-- [x] Automated GitHub Actions build workflow.
-- [x] Common and client mod entrypoints.
-- [x] Explicit match phases: lobby, preparation, countdown, active, endgame and results.
-- [x] Server-side match-state rules with seven generator slots and a five-generator endgame threshold.
-- [x] Initial unit tests for phase transitions, generator validation and results/reset behavior.
-- [x] Operator-only `/entity debug` commands to exercise the state scaffold.
+- [x] Fabric mod project targeting Minecraft 1.21.1 / Java 21.
+- [x] Gradle wrapper and GitHub Actions build workflow.
+- [x] Explicit server-owned match phases and victory/result state.
+- [x] Seven generator slots with five required to power the exit phase.
+- [x] Placeable Generator and Exit Gate Console blocks, with block/item models and English/Russian names.
+- [x] `/entity demo` starts a solo test match, selects the survivor role and gives objective blocks.
+- [x] `/entity role survivor|killer` and `/entity status` commands.
+- [x] Server-side generator interaction progress, distinct-generator tracking and survivor escape condition.
+- [x] Match-state unit tests for phase transitions, objective threshold, reset and invalid configurations.
+- [x] CI configured to run a clean Gradle build/tests and upload the JAR as a temporary artifact on success.
 
 ## Verification status
 - [ ] Clean Gradle build has been observed and confirmed.
 - [ ] Automated tests have passed in CI.
-- [ ] Development client launch.
+- [ ] Development client launch and in-game interaction verified.
 - [ ] Dedicated server launch.
-- [ ] In-game match and objectives.
-- [ ] Bots, chases, traps, custom map, animations/audio and polished UI.
-- [ ] Five-client multiplayer.
-- [ ] Client/server distribution.
+- [ ] AI killer and AI survivors.
+- [ ] Combat, injury/downed/carry/capture/rescue, pallets and traps.
+- [ ] Custom map, lobby/HUD, original models/animations/audio.
+- [ ] Five-client multiplayer and client/server distribution.
 
-The debug commands only test the current state scaffold. They do **not** represent a playable match, and no bot or generator world object has been implemented yet.
+**Important:** the objective mechanics are implemented in source but have not yet been confirmed by a successful build or live Minecraft session. The current slice is not a finished game. The objective blocks use temporary vanilla-based visuals, and the match has no AI or killer combat yet.
 
 ## Next actions
-1. Confirm the first CI build and fix any build errors.
-2. Add an actual lobby/start flow rather than command-only testing.
-3. Implement player roles and the first visible gameplay objective.
-4. Build toward a complete playable solo vertical slice, including useful bots and real win/loss outcomes.
+1. Obtain a real CI result and fix compile/test failures.
+2. Verify the mod in a Minecraft client; fix any mapping/API or interaction issues.
+3. Add a simple arena and meaningful solo AI.
+4. Implement the killer/survivor interaction loop, then improve presentation and multiplayer.
 
 ## Owner-facing status
-The repository now has a real mod project foundation and the first tested-in-design match rules, but gameplay has not yet been verified in Minecraft. Do not install it as a playable game yet.
+The repo has advanced beyond the state-only scaffold: it now contains a first in-world objective loop and an exit condition. A download should not be offered until CI succeeds and the behavior is tested honestly.
