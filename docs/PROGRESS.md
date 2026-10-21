@@ -19,9 +19,7 @@
 
 ## Verification status
 
-A clean build is required after adding standing/dropped pallet blocks, survivor drop-and-stun behavior, AI pallet breaking, and the new exit gate opening flow.
-
-A fresh CI build is required after adding the ten-interaction exit gate sequence and its unit test.
+A fresh clean build is required after adding killer snares and the trap registration/removal test.
 - [x] Latest clean CI build succeeded after match-end fixes.
 - [x] Automated JUnit tests passed, including match phases, generator threshold, survivor state transitions and killer win condition.
 - [ ] Launch Minecraft 1.21.1 with the mod and supplied arena.
