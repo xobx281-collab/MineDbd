@@ -232,7 +232,14 @@ public final class ProjectEntity implements ModInitializer {
                         return reportTransition(context.getSource(), MatchManager.current(), accepted, "Returned to lobby");
                     }))
                     .then(Commands.literal("reset").executes(context -> {
+                        var objectivePositions = ObjectiveProgress.allObjectivePositions();
                         for (ServerLevel level : context.getSource().getServer().getAllLevels()) {
+                            for (var pos : objectivePositions) {
+                                var block = level.getBlockState(pos);
+                                if (block.is(ObjectiveBlocks.GENERATOR) || block.is(ObjectiveBlocks.EXIT_GATE)) {
+                                    level.removeBlock(pos, false);
+                                }
+                            }
                             for (Entity entity : level.getAllEntities()) {
                                 if (entity.getTags().contains("project_entity_killer") || entity.getTags().contains(SurvivorBotAI.BOT_TAG)) {
                                     entity.discard();
