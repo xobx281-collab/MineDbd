@@ -4,28 +4,27 @@ An original Minecraft Java Edition asymmetrical survival-horror game mode inspir
 
 ## Current status
 
-**Stage:** Early playable-systems development; not yet a verified playable release.  
-**Release status:** No downloadable release until CI and in-game behavior are verified.  
-**Canonical specification:** [docs/GAME_DESIGN.md](docs/GAME_DESIGN.md)  
-**Current progress and next steps:** [docs/PROGRESS.md](docs/PROGRESS.md)
+**Stage:** Early gameplay prototype; CI build and automated tests pass, but live Minecraft behavior is not yet verified.
+**Canonical arena:** The user's supplied Dead By Daylight / Freddy Fazbear's world (Minecraft 1.21.1). See [map integration notes](docs/MAP_INTEGRATION.md).
+**Canonical specification:** [docs/GAME_DESIGN.md](docs/GAME_DESIGN.md)
+**Current progress:** [docs/PROGRESS.md](docs/PROGRESS.md)
 
-## First in-world test scaffold
+## Current prototype
 
-The mod now includes the first visible objective blocks and a simple solo test path:
-
+The mod has an early in-world objective loop:
 1. Install the built mod JAR in a Minecraft 1.21.1 Fabric client with Java 21 and Fabric API.
-2. Enter a world with cheats enabled.
-3. Run `/entity demo` to start a test match and receive seven generator blocks and two exit-gate consoles.
-4. Place the blocks. Right-click each generator eight times to repair it.
-5. Repair five distinct generators to power the exit gates, then right-click an exit-gate console to finish with a survivor victory.
-6. Run `/entity status` to inspect the phase, role, and objective count.
+2. Open a backup copy of the supplied world with commands available.
+3. Run `/entity demo` to start a test match, assign the player as survivor, receive seven generator blocks and two exit-gate consoles, and spawn a hostile vanilla Husk as a temporary killer.
+4. Place the objective blocks in safe, open areas. Right-click each generator eight times to repair it.
+5. Repair five distinct generators to enter endgame, then right-click an Exit Gate Console to finish with a survivor victory.
+6. Run `/entity status` to inspect the phase, role and objective count. An operator can run `/entity reset` to clear match state and the tagged demo killer.
 
-This is an early mechanics scaffold, not the intended final experience: there is no killer AI, survivor AI, chase/combat system, custom map, animation set, or polished lobby yet. It has not been verified in a launched Minecraft client.
+The Husk is only a temporary basic hostile-mob stand-in, not a custom killer AI. Objective blocks currently use temporary vanilla-based visuals. The map's actual spawn safety, arena geometry, objective positions and live client behavior have not yet been verified.
 
 ## Core vision
 
 - One killer versus four survivors.
-- Complete matches with objectives, chases, injuries, captures, rescues, gates, escapes, and results.
+- Complete matches with objectives, chases, injuries, captures, rescues, gates, escapes and results.
 - Solo testing with AI-controlled players.
 - Multiplayer through a dedicated server and LAN/internet connections.
 - Original, properly licensed assets and a cohesive horror presentation.
@@ -33,4 +32,4 @@ This is an early mechanics scaffold, not the intended final experience: there is
 
 ## Verification policy
 
-A successful compilation is not proof that the game is playable. Test reports must clearly distinguish verified behavior from untested implementation. The CI workflow builds, runs tests, and publishes the JAR as a temporary workflow artifact when successful.
+GitHub Actions clean build and automated tests have passed. This does not prove that the mod loads or behaves correctly in a live Minecraft client. Do not describe the current prototype as a finished game until client and dedicated-server smoke tests have passed.
