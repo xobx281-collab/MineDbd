@@ -12,10 +12,13 @@ import java.util.Set;
 /** Server-owned progress for the physical objective blocks in the current world. */
 public final class ObjectiveProgress {
     public static final int CLICKS_TO_REPAIR = 8;
+    public static final int CLICKS_TO_OPEN_GATE = 10;
     private static final Map<BlockPos, Integer> progress = new HashMap<>();
     private static final Map<BlockPos, Integer> generatorIds = new HashMap<>();
     private static final Set<Integer> assignedIds = new HashSet<>();
     private static final Set<BlockPos> exitGates = new HashSet<>();
+    private static final Map<BlockPos, Integer> gateProgress = new HashMap<>();
+    private static final Set<BlockPos> openGates = new HashSet<>();
 
     private ObjectiveProgress() {}
 
@@ -47,6 +50,21 @@ public final class ObjectiveProgress {
         return new ArrayList<>(exitGates);
     }
 
+    /** Advances a powered gate's opening sequence. Returns -1 when not in endgame. */
+    public static synchronized int openGate(BlockPos position, MatchState match) {
+        if (match.phase() != MatchPhase.ENDGAME) return -1;
+        BlockPos key = position.immutable();
+        if (openGates.contains(key)) return CLICKS_TO_OPEN_GATE;
+        int next = Math.min(CLICKS_TO_OPEN_GATE, gateProgress.getOrDefault(key, 0) + 1);
+        gateProgress.put(key, next);
+        if (next >= CLICKS_TO_OPEN_GATE) openGates.add(key);
+        return next;
+    }
+
+    public static synchronized boolean isGateOpen(BlockPos position) {
+        return openGates.contains(position.immutable());
+    }
+
     public static synchronized List<BlockPos> allObjectivePositions() {
         List<BlockPos> result = new ArrayList<>(generatorIds.keySet());
         result.addAll(exitGates);
@@ -74,5 +92,7 @@ public final class ObjectiveProgress {
         generatorIds.clear();
         assignedIds.clear();
         exitGates.clear();
+        gateProgress.clear();
+        openGates.clear();
     }
 }
