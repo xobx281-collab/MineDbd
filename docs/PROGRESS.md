@@ -22,6 +22,8 @@
 - [x] The user-supplied Dead By Daylight / Freddy Fazbear's world is the canonical arena. Its metadata matches Minecraft 1.21.1.
 
 ## Verified vs unverified
+
+A fresh clean build is required after adding simple villager-based survivor bots, generator-position registration and reset cleanup. Their pathfinding and behavior still require live in-game verification.
 - [x] CI clean build succeeded.
 - [x] Automated Gradle/JUnit test task completed successfully.
 - [ ] Minecraft client launch and in-game behavior verified.
