@@ -16,6 +16,18 @@ public final class MatchManager {
     public static void setRole(UUID playerId, PlayerRole role) { roles.put(playerId, role); }
     public static PlayerRole role(UUID playerId) { return roles.get(playerId); }
     public static SurvivorState survivorState(UUID playerId) { return survivorStates.computeIfAbsent(playerId, ignored -> new SurvivorState()); }
+
+    public static boolean allSurvivorsDowned() {
+        boolean foundSurvivor = false;
+        for (Map.Entry<UUID, PlayerRole> entry : roles.entrySet()) {
+            if (entry.getValue() != PlayerRole.SURVIVOR) continue;
+            foundSurvivor = true;
+            SurvivorCondition condition = survivorState(entry.getKey()).condition();
+            if (condition != SurvivorCondition.DOWNED && condition != SurvivorCondition.ELIMINATED) return false;
+        }
+        return foundSurvivor;
+    }
+
     public static void clearRoles() { roles.clear(); survivorStates.clear(); }
 
     public static synchronized void reset() {
