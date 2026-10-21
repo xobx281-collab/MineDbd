@@ -89,8 +89,19 @@ public final class SurvivorBotAI {
                     if (match.phase() == MatchPhase.ACTIVE) {
                         ObjectiveProgress.repair(target, match);
                     } else if (distance <= 2.25) {
-                        survivor.escape();
-                        bot.addTag("project_entity_bot_escaped");
+                        if (survivor.escape() && match.finish(false)) {
+                            server.getPlayerList().broadcastSystemMessage(
+                                net.minecraft.network.chat.Component.literal("SURVIVOR VICTORY — a survivor bot reached the exit."), false);
+                            for (ServerLevel cleanupLevel : server.getAllLevels()) {
+                                for (Entity cleanupEntity : cleanupLevel.getAllEntities()) {
+                                    if (cleanupEntity.getTags().contains("project_entity_killer")
+                                        || cleanupEntity.getTags().contains(BOT_TAG)) {
+                                        cleanupEntity.discard();
+                                    }
+                                }
+                            }
+                            return;
+                        }
                         bot.getNavigation().stop();
                     }
                 } else {
