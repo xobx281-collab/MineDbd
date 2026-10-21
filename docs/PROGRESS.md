@@ -15,6 +15,7 @@
 - [x] The solo demo now spawns a tagged hostile Husk as a basic killer prototype; /entity reset removes tagged demo killers.
 - [x] Three villager-based survivor bots spawn in solo demo, navigate toward placed generators, contribute repair progress, and head toward exit gates during endgame.
 - [x] Placed generator and exit-gate positions are registered server-side; reset removes registered objective blocks and demo entities.
+- [x] Solo demo attempts to place seven generators and two gates on nearby safe floor surfaces in the supplied world; any objectives that cannot be placed are provided as items.
 - [x] Pure survivor condition model: healthy, injured, downed, carried, captured, escaped and eliminated; two-hit injury/downed transitions, healing, revival, three capture stages, rescue and escape rules.
 - [x] Basic tagged-killer hits now feed server-side survivor state and show injury/downed feedback; full carry/rescue presentation remains incomplete.
 - [x] /entity role survivor|killer and /entity status commands.
@@ -29,7 +30,7 @@ A fresh clean build is required after adding simple villager-based survivor bots
 - [ ] Minecraft client launch and in-game behavior verified.
 - [ ] Dedicated server launch verified.
 - [ ] Supplied arena opened in-game and its safe spawns / routes recorded.
-- [ ] Objective blocks automatically placed at configured map points.
+- [ ] Validate automatic placement against the supplied map's actual geometry; current placement uses nearby relative offsets and safe-surface checks rather than hand-authored map coordinates.
 - [ ] Survivor health/downed/carry/capture/rescue system.
 - [ ] Pallets, stuns, traps and killer powers.
 - [ ] Smarter survivor AI (avoid killer, rescue/heal, use pallets, react to traps); current bots only seek objectives and gates.
