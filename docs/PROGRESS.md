@@ -13,6 +13,8 @@
 - [x] Placeable Generator and Exit Gate Console blocks, temporary vanilla-based models and English/Russian names.
 - [x] /entity demo starts a solo test match, assigns the player as survivor and provides objective blocks.
 - [x] The solo demo now spawns a tagged hostile Husk as a basic killer prototype; /entity reset removes tagged demo killers.
+- [x] Three villager-based survivor bots spawn in solo demo, navigate toward placed generators, contribute repair progress, and head toward exit gates during endgame.
+- [x] Placed generator and exit-gate positions are registered server-side; reset removes registered objective blocks and demo entities.
 - [x] Pure survivor condition model: healthy, injured, downed, carried, captured, escaped and eliminated; two-hit injury/downed transitions, healing, revival, three capture stages, rescue and escape rules.
 - [x] Basic tagged-killer hits now feed server-side survivor state and show injury/downed feedback; full carry/rescue presentation remains incomplete.
 - [x] /entity role survivor|killer and /entity status commands.
@@ -28,7 +30,8 @@
 - [ ] Objective blocks automatically placed at configured map points.
 - [ ] Survivor health/downed/carry/capture/rescue system.
 - [ ] Pallets, stuns, traps and killer powers.
-- [ ] AI survivor teammates; current solo slice has only a basic hostile killer mob.
+- [ ] Smarter survivor AI (avoid killer, rescue/heal, use pallets, react to traps); current bots only seek objectives and gates.
+- [ ] Custom killer AI and a proper carry/rescue interaction loop.
 - [ ] Lobby/HUD, custom models, animations, sounds and map dressing.
 - [ ] Five-client multiplayer and packaged client/server distribution.
 
