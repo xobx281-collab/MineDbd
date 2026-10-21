@@ -17,6 +17,8 @@ import net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.event.player.UseBlockCallback;
 import net.minecraft.commands.Commands;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.InteractionResult;
@@ -32,6 +34,9 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.HashSet;
+import java.util.Set;
 
 public final class ProjectEntity implements ModInitializer {
     public static final String MOD_ID = "project_entity";
@@ -178,12 +183,23 @@ public final class ProjectEntity implements ModInitializer {
                         state.beginPreparation();
                         state.beginCountdown();
                         state.beginMatch();
-                        player.getInventory().add(new ItemStack(ObjectiveBlocks.GENERATOR, 7));
-                        player.getInventory().add(new ItemStack(ObjectiveBlocks.EXIT_GATE, 2));
                         ServerLevel level = player.serverLevel();
+                        Set<BlockPos> usedPositions = new HashSet<>();
+                        int placedGenerators = placeObjectives(level, player.blockPosition(), ObjectiveBlocks.GENERATOR,
+                            new int[][]{{12, 0}, {8, 8}, {0, 12}, {-8, 8}, {-12, 0}, {-8, -8}, {0, -12}}, usedPositions);
+                        int placedGates = placeObjectives(level, player.blockPosition(), ObjectiveBlocks.EXIT_GATE,
+                            new int[][]{{18, 4}, {-18, -4}}, usedPositions);
+                        if (placedGenerators < 7) {
+                            player.getInventory().add(new ItemStack(ObjectiveBlocks.GENERATOR, 7 - placedGenerators));
+                        }
+                        if (placedGates < 2) {
+                            player.getInventory().add(new ItemStack(ObjectiveBlocks.EXIT_GATE, 2 - placedGates));
+                        }
                         Husk killer = EntityType.HUSK.create(level);
                         if (killer != null) {
-                            killer.setPos(player.getX() + 8.0, player.getY(), player.getZ() + 8.0);
+                            BlockPos killerPos = findNearbySurface(level, player.blockPosition(), 8, 6, usedPositions);
+                            if (killerPos == null) killerPos = player.blockPosition().offset(8, 0, 6);
+                            killer.setPos(killerPos.getX() + 0.5, killerPos.getY(), killerPos.getZ() + 0.5);
                             killer.setCustomName(Component.literal("The Killer"));
                             killer.setCustomNameVisible(true);
                             killer.addTag("project_entity_killer");
@@ -193,8 +209,11 @@ public final class ProjectEntity implements ModInitializer {
                             level.addFreshEntity(killer);
                         }
                         int bots = SurvivorBotAI.spawnFor(player, 3);
+                        int finalGenerators = placedGenerators;
+                        int finalGates = placedGates;
                         context.getSource().sendSuccess(() -> Component.literal(
-                            "Solo demo started. Role: SURVIVOR. A hostile killer and " + bots + " survivor bots have spawned. Place seven Generators and two Exit Gates; bots will seek and repair placed generators."), false);
+                            "Solo demo started. Role: SURVIVOR. Spawned a killer and " + bots + " survivor bots. Auto-placed " + finalGenerators
+                                + "/7 generators and " + finalGates + "/2 gates near you; remaining objectives are in your inventory."), false);
                         return 1;
                     }))
                 .then(Commands.literal("debug")
@@ -255,6 +274,53 @@ public final class ProjectEntity implements ModInitializer {
         );
 
         LOGGER.info("Project Entity initialized. In-world generator and exit-gate objectives registered.");
+    }
+
+    private static int placeObjectives(
+        ServerLevel level,
+        BlockPos origin,
+        net.minecraft.world.level.block.Block block,
+        int[][] offsets,
+        Set<BlockPos> usedPositions
+    ) {
+        int placed = 0;
+        for (int[] offset : offsets) {
+            BlockPos pos = findNearbySurface(level, origin, offset[0], offset[1], usedPositions);
+            if (pos == null) continue;
+            if (level.setBlock(pos, block.defaultBlockState(), 3)) {
+                usedPositions.add(pos.immutable());
+                placed++;
+            }
+        }
+        return placed;
+    }
+
+    private static BlockPos findNearbySurface(
+        ServerLevel level,
+        BlockPos origin,
+        int offsetX,
+        int offsetZ,
+        Set<BlockPos> usedPositions
+    ) {
+        for (int radius = 0; radius <= 3; radius++) {
+            for (int dx = -radius; dx <= radius; dx++) {
+                for (int dz = -radius; dz <= radius; dz++) {
+                    if (radius > 0 && Math.abs(dx) != radius && Math.abs(dz) != radius) continue;
+                    int x = origin.getX() + offsetX + dx;
+                    int z = origin.getZ() + offsetZ + dz;
+                    for (int y = origin.getY() + 2; y >= origin.getY() - 4; y--) {
+                        BlockPos pos = new BlockPos(x, y, z);
+                        if (usedPositions.contains(pos) || !level.getBlockState(pos).isAir()
+                            || !level.getBlockState(pos.above()).isAir()) continue;
+                        var floor = level.getBlockState(pos.below());
+                        if (floor.isFaceSturdy(level, pos.below(), Direction.UP)) {
+                            return pos.immutable();
+                        }
+                    }
+                }
+            }
+        }
+        return null;
     }
 
     private static int reportTransition(
