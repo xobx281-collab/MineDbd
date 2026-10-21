@@ -6,7 +6,7 @@
 ## Implemented in source
 - [x] Minecraft Java 1.21.1 / Java 21 / Fabric mod project.
 - [x] Stable Fabric Loom 1.15.5 and GitHub Actions build/test workflow.
-- [x] Latest clean CI build and automated tests passed for the gate/pallet prototype (GitHub Actions run 111). A remapped mod JAR artifact was produced.
+- [x] Latest clean CI build and automated tests passed for the pallet/trap prototype (GitHub Actions run 128). A remapped mod JAR artifact was produced.
 - [x] Server-owned match phases, seven generator slots and five-generator endgame threshold.
 - [x] Placeable Generator and Exit Gate Console blocks with temporary vanilla-based models and English/Russian names.
 - [x] /entity demo starts a solo test match, assigns the player as survivor, attempts to place objectives on nearby safe surfaces, and gives any objectives it cannot place as items.
@@ -21,7 +21,7 @@
 
 A fresh CI build is required after adding the one-shot killer snare block, trap triggering, and the trap registry test.
 
-A fresh clean build is required after adding killer snares and the trap registration/removal test.
+The pallet/trap prototype passed a fresh clean build and automated tests (run 128). Live in-game verification is still outstanding.
 - [x] Latest clean CI build succeeded after match-end fixes.
 - [x] Automated JUnit tests passed, including match phases, generator threshold, survivor state transitions and killer win condition.
 - [ ] Launch Minecraft 1.21.1 with the mod and supplied arena.
