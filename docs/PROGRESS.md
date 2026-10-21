@@ -17,6 +17,8 @@
 - [x] CI configured to run a clean Gradle build/tests and upload the JAR as a temporary artifact on success.
 
 ## Verification status
+
+The first CI run successfully compiled the main and client sources and produced remapped JAR tasks, then failed during test execution because Gradle 9 could not load the JUnit Platform launcher. The launcher dependency is now declared as a test runtime dependency; the next clean CI run is the verification gate.
 - [ ] Clean Gradle build has been observed and confirmed.
 - [ ] Automated tests have passed in CI.
 - [ ] Development client launch and in-game interaction verified.
