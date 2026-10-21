@@ -1,7 +1,18 @@
 # Architecture and Technical Decisions
 
-## Status
-Initial architectural principles only. The exact Minecraft version, loader, Java toolchain and library versions remain **unselected until compatibility is verified**.
+## Initial toolchain
+- Minecraft Java Edition: 1.21.1
+- Java: 21
+- Mod loader: Fabric
+- Fabric API: 0.116.17+1.21.1
+- Fabric Loader: 0.19.5
+- Fabric Loom: 1.18-SNAPSHOT
+
+The Minecraft 1.21.1/Java 21 combination and project structure are based on the official Fabric 1.21.1 example project and version-specific Fabric documentation. These versions are the initial baseline, not a claim that the project has already built successfully. Dependency resolution and clean-build verification remain pending.
+
+Sources:
+- https://github.com/FabricMC/fabric-example-mod/tree/1.21.1
+- https://github.com/FabricMC/fabric-docs/blob/main/versions/1.21.1/develop/getting-started/setting-up-a-development-environment.md
 
 ## Constraints
 - Dedicated-server compatible.
@@ -22,8 +33,8 @@ Initial architectural principles only. The exact Minecraft version, loader, Java
 - **Content/config:** map layout, balance values, original assets and license records.
 - **Testing:** pure game-rule tests plus available integration/manual scenarios.
 
-## Decisions policy
-Choose the simplest stable stack that supports the full design. Check official documentation and library compatibility before pinning versions. Document the chosen versions and reasons here. Client graphics or shader libraries must never be server requirements.
+## Dependency policy
+Add animation/model libraries only when their compatibility with the selected Minecraft version and loader is confirmed and the first feature actually needs them. Client graphics or shader libraries must never be server requirements.
 
 ## Current limitations
-No game code or toolchain has been verified yet. The repository initialization is not a playable build.
+The repository contains the initial mod entrypoints and build configuration. A clean build, client launch, dedicated-server launch, and gameplay have not yet been verified.
