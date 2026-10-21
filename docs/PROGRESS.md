@@ -1,29 +1,30 @@
 # Project Entity Progress
 
 ## Current milestone
-**Milestone 1 — Foundation (not complete).**
+**Milestone 1 — Foundation (in progress).**
 
-## Verified
+## Implemented in repository
 - [x] Connected repository identified: `xobx281-collab/MineDbd`.
-- [x] Repository was empty before initialization.
-- [x] Project README, repository instructions, canonical design summary, architecture notes and test plan created.
+- [x] Initial project documentation and repository rules.
+- [x] Initial Fabric mod build files for Minecraft 1.21.1 / Java 21.
+- [x] Common and client mod entrypoints.
+- [x] Git ignore and project license notice.
 
 ## Not yet verified
-- [ ] Minecraft/Java/mod loader compatibility.
-- [ ] Build system and dependencies.
-- [ ] Client launch.
+- [ ] Gradle wrapper is present and working.
+- [ ] Dependency resolution and clean build.
+- [ ] Development client launch.
 - [ ] Dedicated server launch.
-- [ ] Any gameplay feature.
+- [ ] Any playable gameplay feature.
 - [ ] AI or solo match.
 - [ ] Multiplayer.
 - [ ] Client/server distribution.
 
 ## Next actions
-1. Verify current toolchain and dependency compatibility from authoritative sources.
-2. Create the minimal mod project and automated build/test workflow.
-3. Build from a clean checkout.
-4. Verify client and dedicated-server startup where the environment allows.
-5. Implement the smallest complete playable match loop, then expand toward the canonical design.
+1. Add a reproducible Gradle wrapper and automated build workflow.
+2. Verify clean build and fix any compatibility/build issues.
+3. Add initial match state and in-game start controls.
+4. Build a complete playable vertical slice before expanding features.
 
 ## Owner-facing status
-The project has been initialized in GitHub, but there is not yet a playable game. Do not install or test it as a mod until a release artifact and working installation guide exist.
+Project files have started appearing in GitHub, but there is not yet a playable game. Do not install or test it as a mod until a release artifact and working installation guide exist.
