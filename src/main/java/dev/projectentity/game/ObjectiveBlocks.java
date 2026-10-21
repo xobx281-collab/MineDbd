@@ -34,9 +34,21 @@ public final class ObjectiveBlocks {
             }
         });
     public static final Block PALLET = registerBlock("pallet",
-        new Block(BlockBehaviour.Properties.of().strength(2.0F).requiresCorrectToolForDrops()));
+        new Block(BlockBehaviour.Properties.of().strength(2.0F).requiresCorrectToolForDrops()) {
+            @Override
+            public void onPlace(BlockState state, Level level, BlockPos pos, BlockState oldState, boolean movedByPiston) {
+                super.onPlace(state, level, pos, oldState, movedByPiston);
+                if (!level.isClientSide() && !state.is(oldState.getBlock())) ObjectiveProgress.registerPallet(pos);
+            }
+        });
     public static final Block DROPPED_PALLET = registerBlock("dropped_pallet",
-        new Block(BlockBehaviour.Properties.of().strength(3.0F).requiresCorrectToolForDrops()), false);
+        new Block(BlockBehaviour.Properties.of().strength(3.0F).requiresCorrectToolForDrops()) {
+            @Override
+            public void onPlace(BlockState state, Level level, BlockPos pos, BlockState oldState, boolean movedByPiston) {
+                super.onPlace(state, level, pos, oldState, movedByPiston);
+                if (!level.isClientSide() && !state.is(oldState.getBlock())) ObjectiveProgress.registerPallet(pos);
+            }
+        }, false);
 
     private ObjectiveBlocks() {}
 
