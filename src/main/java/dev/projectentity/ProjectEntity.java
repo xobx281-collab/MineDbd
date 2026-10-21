@@ -14,8 +14,14 @@ import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.event.player.UseBlockCallback;
 import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.monster.Husk;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -126,8 +132,20 @@ public final class ProjectEntity implements ModInitializer {
                         state.beginMatch();
                         player.getInventory().add(new ItemStack(ObjectiveBlocks.GENERATOR, 7));
                         player.getInventory().add(new ItemStack(ObjectiveBlocks.EXIT_GATE, 2));
+                        ServerLevel level = player.serverLevel();
+                        Husk killer = EntityType.HUSK.create(level);
+                        if (killer != null) {
+                            killer.setPos(player.getX() + 8.0, player.getY(), player.getZ() + 8.0);
+                            killer.setCustomName(Component.literal("The Killer"));
+                            killer.setCustomNameVisible(true);
+                            killer.addTag("project_entity_killer");
+                            killer.setPersistenceRequired();
+                            killer.setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(Items.IRON_AXE));
+                            killer.setTarget(player);
+                            level.addFreshEntity(killer);
+                        }
                         context.getSource().sendSuccess(() -> Component.literal(
-                            "Solo demo started. Role: SURVIVOR. Place seven Generators and two Exit Gates, then right-click each generator eight times. Five completed generators power the gates."), false);
+                            "Solo demo started. Role: SURVIVOR. A hostile killer is hunting you. Place seven Generators and two Exit Gates, then right-click each generator eight times. Five completed generators power the gates."), false);
                         return 1;
                     }))
                 .then(Commands.literal("debug")
@@ -165,8 +183,15 @@ public final class ProjectEntity implements ModInitializer {
                         return reportTransition(context.getSource(), MatchManager.current(), accepted, "Returned to lobby");
                     }))
                     .then(Commands.literal("reset").executes(context -> {
+                        for (ServerLevel level : context.getSource().getServer().getAllLevels()) {
+                            for (Entity entity : level.getAllEntities()) {
+                                if (entity.getTags().contains("project_entity_killer")) {
+                                    entity.discard();
+                                }
+                            }
+                        }
                         MatchManager.reset();
-                        context.getSource().sendSuccess(() -> Component.literal("Match state, roles and objectives reset."), false);
+                        context.getSource().sendSuccess(() -> Component.literal("Match state, roles, objectives and demo killer reset."), false);
                         return 1;
                     }))
                 )
