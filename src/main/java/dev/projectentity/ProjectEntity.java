@@ -133,7 +133,7 @@ public final class ProjectEntity implements ModInitializer {
                     || MatchManager.survivorState(player.getUUID()).condition() == SurvivorCondition.CAPTURED
                     || MatchManager.survivorState(player.getUUID()).condition() == SurvivorCondition.ELIMINATED) {
                     player.displayClientMessage(Component.literal("You cannot escape while downed or captured."), true);
-                } else if (finishMatch(player.serverLevel(), false)) {
+                } else if (finishMatch((ServerLevel) world, false)) {
                     player.displayClientMessage(Component.literal("ESCAPED — Survivor victory! Use /entity reset before another test."), false);
                 } else {
                     player.displayClientMessage(Component.literal("The match has already ended."), true);
