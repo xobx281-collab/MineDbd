@@ -341,6 +341,7 @@ public final class ProjectEntity implements ModInitializer {
             : "SURVIVOR VICTORY — the exit has been reached.";
         level.getServer().getPlayerList().broadcastSystemMessage(Component.literal(result), false);
         removeDemoEntities(level.getServer());
+        KillerBotAI.reset();
         return true;
     }
 
