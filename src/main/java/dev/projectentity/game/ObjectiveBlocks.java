@@ -49,6 +49,14 @@ public final class ObjectiveBlocks {
                 if (!level.isClientSide() && !state.is(oldState.getBlock())) ObjectiveProgress.registerPallet(pos);
             }
         }, false);
+    public static final Block TRAP = registerBlock("trap",
+        new Block(BlockBehaviour.Properties.of().noCollission().strength(0.5F)) {
+            @Override
+            public void onPlace(BlockState state, Level level, BlockPos pos, BlockState oldState, boolean movedByPiston) {
+                super.onPlace(state, level, pos, oldState, movedByPiston);
+                if (!level.isClientSide() && !state.is(oldState.getBlock())) ObjectiveProgress.registerTrap(pos);
+            }
+        });
 
     private ObjectiveBlocks() {}
 
