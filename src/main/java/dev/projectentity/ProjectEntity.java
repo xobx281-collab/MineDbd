@@ -159,14 +159,16 @@ public final class ProjectEntity implements ModInitializer {
                     .then(Commands.literal("survivor_win").executes(context ->
                         reportTransition(context.getSource(), MatchManager.current(),
                             MatchManager.current().finish(false), "Survivor victory recorded")))
-                    .then(Commands.literal("lobby").executes(context ->
-                        reportTransition(context.getSource(), MatchManager.current(),
-                            MatchManager.current().returnToLobby(), "Returned to lobby"))
-                        .then(Commands.literal("reset").executes(context -> {
-                            MatchManager.reset();
-                            context.getSource().sendSuccess(() -> Component.literal("Match state and objectives reset."), false);
-                            return 1;
-                        }))
+                    .then(Commands.literal("lobby").executes(context -> {
+                        boolean accepted = MatchManager.current().returnToLobby();
+                        if (accepted) ObjectiveProgress.reset();
+                        return reportTransition(context.getSource(), MatchManager.current(), accepted, "Returned to lobby");
+                    }))
+                    .then(Commands.literal("reset").executes(context -> {
+                        MatchManager.reset();
+                        context.getSource().sendSuccess(() -> Component.literal("Match state, roles and objectives reset."), false);
+                        return 1;
+                    }))
                 )
             )
         );
