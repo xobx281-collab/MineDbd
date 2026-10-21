@@ -13,6 +13,15 @@ class ObjectiveProgressTest {
     }
 
     @Test
+    void trapRegistrationCanBeRemovedAfterTrigger() {
+        BlockPos trap = new BlockPos(2, 64, 3);
+        ObjectiveProgress.registerTrap(trap);
+        assertTrue(ObjectiveProgress.trapPositions().contains(trap));
+        ObjectiveProgress.unregisterTrap(trap);
+        assertFalse(ObjectiveProgress.trapPositions().contains(trap));
+    }
+
+    @Test
     void gatesCannotOpenBeforeEndgameAndNeedTenInteractions() {
         MatchState match = new MatchState();
         BlockPos gate = new BlockPos(10, 64, 10);
