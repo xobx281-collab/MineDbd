@@ -13,6 +13,8 @@
 - [x] Placeable Generator and Exit Gate Console blocks, temporary vanilla-based models and English/Russian names.
 - [x] /entity demo starts a solo test match, assigns the player as survivor and provides objective blocks.
 - [x] The solo demo now spawns a tagged hostile Husk as a basic killer prototype; /entity reset removes tagged demo killers.
+- [x] Pure survivor condition model: healthy, injured, downed, carried, captured, escaped and eliminated; two-hit injury/downed transitions, healing, revival, three capture stages, rescue and escape rules.
+- [x] Basic tagged-killer hits now feed server-side survivor state and show injury/downed feedback; full carry/rescue presentation remains incomplete.
 - [x] /entity role survivor|killer and /entity status commands.
 - [x] Server-side generator interaction progress, distinct-generator tracking and survivor escape condition.
 - [x] The user-supplied Dead By Daylight / Freddy Fazbear's world is the canonical arena. Its metadata matches Minecraft 1.21.1.
